@@ -6,4 +6,8 @@
 
   <Import Project="..\.paket\Paket.Restore.Targets" />
 
+  <ItemGroup>
+    <Compile Include="Database.fs" />
+  </ItemGroup>
+
 </Project>
