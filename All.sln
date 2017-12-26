@@ -5,6 +5,14 @@ MinimumVisualStudioVersion = 15.0.26124.0
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.Dapper", "src\FSharp.Data.Dapper.fsproj", "{11AEE7BA-CCB1-4CDA-8B8F-A916ABDCBBC7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{652A04D8-24FB-4A3B-9DDE-DF40B6078149}"
+	ProjectSection(SolutionItems) = preProject
+		paket.references = paket.references
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "paket", "paket", "{A63D8515-EBC8-4525-9F96-13811EBA28F2}"
+	ProjectSection(SolutionItems) = preProject
+		paket.dependencies = paket.dependencies
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
