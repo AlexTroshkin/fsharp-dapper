@@ -5,7 +5,14 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="InMemoryDatabase.fs" />
+    <Compile Include="QuerySingleTests.fs" />
+    <Compile Include="QueryTests.fs" />
+    <Compile Include="ExecuteTests.fs" />
     <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FSharp.Data.Dapper.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

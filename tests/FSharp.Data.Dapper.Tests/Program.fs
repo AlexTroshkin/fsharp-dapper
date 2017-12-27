@@ -1,12 +1,11 @@
-﻿open Expecto
+﻿module Tests
 
-[<Tests>]
-let tests =
-  test "A simple test" {
-    let subject = "Hello World"
-    Expect.equal subject "Hello World" "The strings should equal"
-  }
+open Expecto
 
 [<EntryPoint>]
 let main argv =
-    runTestsInAssembly defaultConfig argv
+    InMemoryDatabase.Initialize()
+    let ret = runTestsInAssembly defaultConfig argv
+    InMemoryDatabase.Shutdown()
+    
+    ret

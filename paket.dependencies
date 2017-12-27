@@ -1,6 +1,9 @@
 source https://nuget.org/api/v2
 
 nuget Dapper
+
 nuget Expecto
 nuget Expecto.BenchmarkDotNet
 nuget Expecto.FsCheck
+
+nuget Microsoft.Data.Sqlite
