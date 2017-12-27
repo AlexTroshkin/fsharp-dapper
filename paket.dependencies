@@ -1,3 +1,6 @@
 source https://nuget.org/api/v2
 
-nuget Dapper  
+nuget Dapper
+nuget Expecto
+nuget Expecto.BenchmarkDotNet
+nuget Expecto.FsCheck
