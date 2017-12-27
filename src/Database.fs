@@ -1,11 +1,11 @@
 ﻿namespace FSharp.Data.Dapper
 
-open Dapper
+open System
 open System.Data
-open Microsoft.FSharp.Core.Operators.Unchecked
+open Dapper
 
     type QueryDefinition = 
-        { Script : string
+        { Script     : string
           Parameters : obj option }
 
 [<AutoOpen>]
@@ -23,26 +23,26 @@ module Database =
         (queryDefinition : QueryDefinition) 
         (connection : IDbConnection) = async {
 
-        return await <| connection.QueryAsync<'TRow>(queryDefinition.Script, parametersOf queryDefinition)
+        return! await <| connection.QueryAsync<'TRow>(queryDefinition.Script, parametersOf queryDefinition)
     }
 
-    let querySingleOrDefault<'T when 'T : equality >
+    let querySingleAsync<'T>
         (queryDefinition : QueryDefinition)
         (connection : IDbConnection) = async {
 
         let! single = await <| connection.QuerySingleOrDefaultAsync<'T>(queryDefinition.Script, parametersOf queryDefinition)
 
         return 
-            match single with
-            | value when value = defaultof<'T> -> None
-            | value -> Some value
+            if Object.ReferenceEquals(null, single) 
+                then None
+                else Some single 
     }
 
     let executeAsync 
         (queryDefinition : QueryDefinition)
         (connection : IDbConnection) = async {
 
-        let countOfAffectedRows = await <| connection.ExecuteAsync(queryDefinition.Script, parametersOf queryDefinition)
+        let! countOfAffectedRows = await <| connection.ExecuteAsync(queryDefinition.Script, parametersOf queryDefinition)
 
         return countOfAffectedRows
     }
