@@ -4,8 +4,8 @@ open Expecto
 
 [<EntryPoint>]
 let main argv =
-    InMemoryDatabase.Initialize()
+    InMemoryDatabase.Connection.Initialize()
     let ret = runTestsInAssembly defaultConfig argv
-    InMemoryDatabase.Shutdown()
+    InMemoryDatabase.Connection.Shutdown()
     
     ret

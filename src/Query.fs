@@ -4,29 +4,28 @@ open System
 open System.Data
 open Dapper
 
+[<AutoOpen>]
+module Query =
+    
     type QueryDefinition = 
         { Script     : string
           Parameters : obj option }
 
-[<AutoOpen>]
-module Database =
-    
     let private await task = task |> Async.AwaitTask
-
-    let private parametersOf qDef =
-        match qDef.Parameters with
+    let private parametersOf queryDefinition =
+        match queryDefinition.Parameters with
         | Some p -> p
         | None -> null
 
 
-    let queryAsync<'TRow> 
+    let QueryAsync<'TRow> 
         (queryDefinition : QueryDefinition) 
         (connection : IDbConnection) = async {
 
         return! await <| connection.QueryAsync<'TRow>(queryDefinition.Script, parametersOf queryDefinition)
     }
 
-    let querySingleAsync<'T>
+    let QuerySingleAsync<'T>
         (queryDefinition : QueryDefinition)
         (connection : IDbConnection) = async {
 
@@ -38,7 +37,7 @@ module Database =
                 else Some single 
     }
 
-    let executeAsync 
+    let ExecuteAsync 
         (queryDefinition : QueryDefinition)
         (connection : IDbConnection) = async {
 

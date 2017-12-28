@@ -1,12 +1,9 @@
 ﻿module ExecuteTests
 
 open Expecto
-open FSharp.Data.Dapper
-open FSharp.Data.Dapper.Database
+open FSharp.Data.Dapper.Query
 open InMemoryDatabase
 
 [<Tests>]
 let executeTests = 
-    testList "execute tests" [
-
-    ]
+    testList "execute tests" []
