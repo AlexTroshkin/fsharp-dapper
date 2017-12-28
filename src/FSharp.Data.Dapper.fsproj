@@ -6,5 +6,6 @@
   <Import Project="..\.paket\Paket.Restore.Targets" />
   <ItemGroup>
     <Compile Include="Query.fs" />
+    <Compile Include="TemporaryTable.fs" />
   </ItemGroup>
 </Project>
