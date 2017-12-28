@@ -27,12 +27,11 @@ let querySingleTests =
 
             "Must return Some when query count", 
             fun connection -> 
-                
-                let parameters = None
+
                 let script = "select count(1) from Person"
 
                 let countOfPersons = 
-                    { Script = script; Parameters = parameters }
+                    { DefaultQueryDefinition with Script = script }
                     |> QuerySingleAsync <| connection
                     |> Async.RunSynchronously
 
@@ -46,7 +45,7 @@ let querySingleTests =
                 let script = "select * from Person where Id = @Id"
 
                 let person = 
-                    { Script = script ; Parameters = parameters }
+                    { DefaultQueryDefinition with Script = script ; Parameters = parameters }
                     |> QuerySingleAsync <| connection
                     |> Async.RunSynchronously
 
@@ -62,7 +61,7 @@ let querySingleTests =
                 let script = "select * from Person where Id = @Id"
                 
                 let person = 
-                    { Script = script ; Parameters = parameters }
+                    { DefaultQueryDefinition with Script = script ; Parameters = parameters }
                     |> QuerySingleAsync <| connection
                     |> Async.RunSynchronously
                 

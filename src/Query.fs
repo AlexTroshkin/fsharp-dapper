@@ -8,8 +8,14 @@ open Dapper
 module Query =
     
     type QueryDefinition = 
-        { Script     : string
-          Parameters : obj option }
+        { Script          : string
+          Parameters      : obj option
+          TemporaryTables : TemporaryTableDefinition list option }
+    
+    let DefaultQueryDefinition = 
+        { Script          = String.Empty
+          Parameters      = None
+          TemporaryTables = None }
 
     let private await task = task |> Async.AwaitTask
     let private parametersOf queryDefinition =

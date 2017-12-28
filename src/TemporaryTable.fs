@@ -8,5 +8,3 @@ module TemporaryTable =
     type TemporaryTableDefinition = 
         { Name : string 
           Rows : IEnumerable }
-
-        
