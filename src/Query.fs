@@ -10,7 +10,7 @@ module Query =
     type QueryDefinition = 
         { Script          : string
           Parameters      : obj option
-          TemporaryTables : TemporaryTableDefinition list option }
+          TemporaryTables : TableDefinition list option }
     
     let DefaultQueryDefinition = 
         { Script          = String.Empty
