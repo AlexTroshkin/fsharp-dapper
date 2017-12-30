@@ -2,8 +2,10 @@
 
 open System.Collections
 
-[<AutoOpen>]
-module TemporaryTableHelpers =
+module TemporaryTableReflection =
+    open System
+    open System.Reflection
+
     let DatermineTableType (rows : IEnumerable) =
         match rows |> Seq.cast<obj> |> Seq.tryHead with
         | Some head -> head.GetType()
@@ -13,6 +15,12 @@ module TemporaryTableHelpers =
             | false -> failwith "Can't datermine type for temporary table: Collection is empty and not generic type definition"
             | true  -> tableType.GetGenericArguments().[0]
 
+    let DatermineColumnTypes (tableType : Type) =
+        let properties = tableType.GetProperties(BindingFlags.Instance ||| BindingFlags.Public)
+
+
+        ()
+
 [<AutoOpen>]
 module TemporaryTable =
 
@@ -20,10 +28,11 @@ module TemporaryTable =
         { Name : string 
           Rows : IEnumerable }
         
-    
     let private CreateTableName tableDefinition = sprintf "#%s" tableDefinition.Name
     let private CreateTableDefinition tableName columnsDefinition = sprintf "%s (%s)" tableName columnsDefinition
     let private CreateColumnsDefinition tableDefinition =
+        let tableType = TemporaryTableReflection.DatermineTableType tableDefinition.Rows
+        let tableColumns = TemporaryTableReflection.DatermineColumnTypes tableType
 
         ""
 
