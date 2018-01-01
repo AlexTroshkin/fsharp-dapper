@@ -5,46 +5,33 @@ open System.Data
 
 module SqlTypeMapping =
 
+        type TypeMapping =
+            { CLR : Type
+              SQL : DbType
+              SQL_Name : string }
+
         let private TypeMap =  [
-            (typeof<byte>,  DbType.Byte)
-            (typeof<sbyte>,  DbType.SByte)
-            (typeof<int16>,  DbType.Int16)
-            (typeof<uint16>,  DbType.UInt16)
-            (typeof<int>,  DbType.Int32)
-            (typeof<uint32>,  DbType.UInt32)
-            (typeof<int64>,  DbType.Int64)
-            (typeof<uint64>,  DbType.UInt64)
-            (typeof<float>,  DbType.Single)
-            (typeof<double>,  DbType.Double)
-            (typeof<decimal>,  DbType.Decimal)
-            (typeof<bool>,  DbType.Boolean)
-            (typeof<string>,  DbType.String)
-            (typeof<char>,  DbType.StringFixedLength)
-            (typeof<Guid>,  DbType.Guid)
-            (typeof<DateTime>,  DbType.DateTime)
-            (typeof<DateTimeOffset>,  DbType.DateTimeOffset)
-            (typeof<TimeSpan>,  DbType.Time)
-            (typeof<byte>,  DbType.Binary)
-            (typeof<byte Nullable>,  DbType.Byte)
-            (typeof<sbyte Nullable>,  DbType.SByte)
-            (typeof<int16 Nullable >,  DbType.Int16)
-            (typeof<uint16 Nullable>,  DbType.UInt16)
-            (typeof<int Nullable>,  DbType.Int32)
-            (typeof<uint32 Nullable>,  DbType.UInt32)
-            (typeof<int64 Nullable>,  DbType.Int64)
-            (typeof<uint64 Nullable>,  DbType.UInt64)
-            (typeof<float Nullable>,  DbType.Single)
-            (typeof<double Nullable>,  DbType.Double)
-            (typeof<decimal Nullable>,  DbType.Decimal)
-            (typeof<bool Nullable>,  DbType.Boolean)
-            (typeof<char Nullable>,  DbType.StringFixedLength)
-            (typeof<Guid Nullable>,  DbType.Guid)
-            (typeof<DateTime Nullable>,  DbType.DateTime)
-            (typeof<DateTimeOffset Nullable>,  DbType.DateTimeOffset)
-            (typeof<TimeSpan Nullable>,  DbType.Time)
-            (typeof<obj>,  DbType.Object)
+            { CLR = typeof<byte>           ; SQL = DbType.Byte              ; SQL_Name = "tinyint"}
+            { CLR = typeof<sbyte>          ; SQL = DbType.SByte             ; SQL_Name = "smallint"}
+            { CLR = typeof<int16>          ; SQL = DbType.Int16             ; SQL_Name = "smallint"}
+            { CLR = typeof<uint16>         ; SQL = DbType.UInt16            ; SQL_Name = "int"}
+            { CLR = typeof<int>            ; SQL = DbType.Int32             ; SQL_Name = "int"}
+            { CLR = typeof<uint32>         ; SQL = DbType.UInt32            ; SQL_Name = "bigint"}
+            { CLR = typeof<int64>          ; SQL = DbType.Int64             ; SQL_Name = "bigint"}
+            { CLR = typeof<uint64>         ; SQL = DbType.UInt64            ; SQL_Name = "decimal(20}"}
+            { CLR = typeof<float>          ; SQL = DbType.Single            ; SQL_Name = "real"}
+            { CLR = typeof<double>         ; SQL = DbType.Double            ; SQL_Name = "float"}
+            { CLR = typeof<decimal>        ; SQL = DbType.Decimal           ; SQL_Name = "decimal(29,4}"}
+            { CLR = typeof<bool>           ; SQL = DbType.Boolean           ; SQL_Name = "bit"}
+            { CLR = typeof<string>         ; SQL = DbType.String            ; SQL_Name = "nvarchar(max}"}
+            { CLR = typeof<char>           ; SQL = DbType.StringFixedLength ; SQL_Name = "nchar"}
+            { CLR = typeof<Guid>           ; SQL = DbType.Guid              ; SQL_Name = "UNIQUEIDENTIFIER"}
+            { CLR = typeof<DateTime>       ; SQL = DbType.DateTime          ; SQL_Name = "datetime2"}
+            { CLR = typeof<DateTimeOffset> ; SQL = DbType.DateTimeOffset    ; SQL_Name = "DATETIMEOFFSET"}
+            { CLR = typeof<TimeSpan>       ; SQL = DbType.Time              ; SQL_Name = "time"}
+            { CLR = typeof<byte array>     ; SQL = DbType.Binary            ; SQL_Name = "varbinary(max}"}
+            { CLR = typeof<obj>            ; SQL = DbType.Object            ; SQL_Name = "sql_variant"}
         ]
 
-        let toSqlType sourceType = 
-            TypeMap |> List.tryFind (fun (key, _) -> key = sourceType)
-                    |> Option.map (fun (_, sqlType) -> sqlType)
+        let tryFind clrType = 
+            TypeMap |> List.tryFind (fun typeMapping -> typeMapping.CLR = clrType)
