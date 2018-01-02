@@ -25,47 +25,49 @@ module TemporaryTableReflection =
 [<AutoOpen>]
 module TemporaryTable =
 
-    type TableDefinition = 
+    type Table = 
         { Name : string 
           Rows : IEnumerable }
+          
+    type TableColumnMetadata =
+        { Name      : string 
+          SqlType   : string
+          AllowNull : bool }
     
-    let private CreateTableName tableDefinition = sprintf "#%s" tableDefinition.Name
-    let private CreateTableDefinition tableName columnsDefinition = sprintf "%s (%s)" tableName columnsDefinition
-    let private CreateColumnsDefinition tableDefinition =
-        let tableType = TemporaryTableReflection.DatermineTableType tableDefinition.Rows
-        let properties = 
-            match tableType with
-            | Some clrType -> clrType.GetProperties(BindingFlags.Instance ||| BindingFlags.Public)
-            | None         -> failwith "Can't datermine type for temporary table: Collection is empty and not generic type definition"
+    type TableMetadata = 
+        { Name    : string
+          Columns : TableColumnMetadata list }
+
+    module Metadata =
+    
+        let private CreateColumnsMetadata table =
+            let tableType = TemporaryTableReflection.DatermineTableType table.Rows
+            let properties = 
+                match tableType with
+                | Some clrType -> clrType.GetProperties(BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.GetProperty)
+                | None         -> failwith "Can't datermine type for temporary table: Collection is empty and not generic type definition"
         
-        properties 
-        |> Array.map (fun property ->
-            let underlyingType = TemporaryTableReflection.TryGetUnderlyingType property.DeclaringType
-
-            let columnName = property.Name
-            let columnType =
-                let clrType =
-                    match  underlyingType with
-                    | Some underlyingType -> underlyingType
-                    | None -> property.DeclaringType
+            properties
+            |> Array.map (fun property ->
+                let underlyingType = TemporaryTableReflection.TryGetUnderlyingType property.PropertyType
+                let columnName = property.Name
+                let allowNull  = if underlyingType.IsSome then true else false
+                let columnType =
+                    let clrType =
+                        match  underlyingType with
+                        | Some underlyingType -> underlyingType
+                        | None -> property.PropertyType
                 
-                match SqlTypeMapping.tryFind clrType with
-                | Some mapping -> mapping.SQL_Name
-                | None -> failwith ""
+                    match SqlTypeMapping.tryFind clrType with
+                    | Some mapping -> mapping.SQL_Name
+                    | None -> failwith (sprintf "Can't find sql type mapping for %s" clrType.FullName)
 
-            let nullModifier = 
-                match underlyingType with
-                | Some _ -> "null"
-                | None   -> "not null"
             
-            sprintf "%s %s %s" columnName columnType nullModifier)
+                { Name = columnName; SqlType = columnType; AllowNull = allowNull })
+            |> List.ofArray
 
-        |> (fun columnsDefinition -> String.Join(",", columnsDefinition))
+        let Create (table : Table) = 
+            let name = sprintf "#%s" table.Name
+            let columns = CreateColumnsMetadata table
 
-    let CreateSqlTableDefinition tableDefinition =
-    
-        let columnsDefinition = tableDefinition |> CreateColumnsDefinition 
-        let tableName = tableDefinition |> CreateTableName 
-        let tableDefinition = CreateTableDefinition tableName columnsDefinition
-
-        sprintf "create table %s" tableDefinition
+            { Name = name; Columns = columns }
