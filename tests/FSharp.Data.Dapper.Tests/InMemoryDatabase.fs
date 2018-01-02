@@ -9,7 +9,7 @@ open System.Data
         type Person = 
             { Id         : int64
               Name       : string
-              Patronymic : string
+              Patronymic : string option
               Surname    : string }
 
     module Scripts =
