@@ -1,26 +1,7 @@
 ﻿namespace FSharp.Data.Dapper
 
-open System
 open System.Collections
 open System.Reflection
-
-module TemporaryTableReflection =
-
-    let DatermineTableType (rows : IEnumerable) =
-        match rows |> Seq.cast<obj> |> Seq.tryHead with
-        | Some head -> Some (head.GetType())
-        | None -> 
-            let tableType = rows.GetType()
-            match tableType.IsGenericTypeDefinition with
-            | false -> None 
-            | true  -> tableType.GenericTypeArguments |> Array.tryHead
-    
-    let TryGetUnderlyingType (clrType : Type) = 
-        let hasUnderlyingType = clrType.IsGenericType && (clrType = typedefof<option<_>> || clrType = typedefof<Nullable<_>>)
-        
-        match hasUnderlyingType with
-        | false -> None
-        | true  -> clrType.GenericTypeArguments |> Array.tryHead
 
 [<AutoOpen>]
 module TemporaryTable =
@@ -41,7 +22,7 @@ module TemporaryTable =
     module Metadata =
     
         let private CreateColumnsMetadata table =
-            let tableType = TemporaryTableReflection.DatermineTableType table.Rows
+            let tableType = Reflection.TryGetTypeOfSeq table.Rows
             let properties = 
                 match tableType with
                 | Some clrType -> clrType.GetProperties(BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.GetProperty)
@@ -49,7 +30,7 @@ module TemporaryTable =
         
             properties
             |> Array.map (fun property ->
-                let underlyingType = TemporaryTableReflection.TryGetUnderlyingType property.PropertyType
+                let underlyingType = Reflection.TryGetUnderlyingType property.PropertyType
                 let columnName = property.Name
                 let allowNull  = if underlyingType.IsSome then true else false
                 let columnType =

@@ -5,6 +5,7 @@
   </PropertyGroup>
   <Import Project="..\.paket\Paket.Restore.Targets" />
   <ItemGroup>
+    <Compile Include="Reflection.fs" />
     <Compile Include="SqlTypeMapping.fs" />
     <Compile Include="TemporaryTable.fs" />
     <Compile Include="Query.fs" />
