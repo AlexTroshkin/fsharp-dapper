@@ -11,14 +11,14 @@ open FSharp.Data.Dapper.TemporaryTable
 let tests = 
     testList "Temporary table metadata tests" [
         test "Verify person temporary table metadata" {
-            let rows = [{ Id = 1L; Name = "" ; Patronymic = ""; Surname = "" }]
+            let rows = [{ Id = 1L; Name = "" ; Patronymic = None; Surname = "" }]
             let table = { Name = "Persons"; Rows = rows }
 
             let metadata = Metadata.Create table
             let expectedColumns = [
                 { Name = "Id"        ; SqlType = "bigint"       ; AllowNull = false }
                 { Name = "Name"      ; SqlType = "nvarchar(max)"; AllowNull = false }
-                { Name = "Patronymic"; SqlType = "nvarchar(max)"; AllowNull = false }
+                { Name = "Patronymic"; SqlType = "nvarchar(max)"; AllowNull = true  }
                 { Name = "Surname"   ; SqlType = "nvarchar(max)"; AllowNull = false }
             ]
 
