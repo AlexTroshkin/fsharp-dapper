@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="InMemoryDatabase.fs" />
+    <Compile Include="TemporaryTableMetadataTests.fs" />
     <Compile Include="QuerySingleTests.fs" />
     <Compile Include="QueryTests.fs" />
     <Compile Include="ExecuteTests.fs" />
