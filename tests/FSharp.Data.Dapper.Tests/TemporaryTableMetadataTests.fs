@@ -4,6 +4,8 @@ open Expecto
 
 open InMemoryDatabase.Types
 
+open System.Data
+
 open FSharp.Data.Dapper
 open FSharp.Data.Dapper.TemporaryTable
 
@@ -16,10 +18,10 @@ let tests =
 
             let metadata = Metadata.Create table
             let expectedColumns = [
-                { Name = "Id"        ; SqlType = "bigint"       ; AllowNull = false }
-                { Name = "Name"      ; SqlType = "nvarchar(max)"; AllowNull = false }
-                { Name = "Patronymic"; SqlType = "nvarchar(max)"; AllowNull = true  }
-                { Name = "Surname"   ; SqlType = "nvarchar(max)"; AllowNull = false }
+                { Name = "Id"        ; SqlTypeAsString = "bigint"       ; AllowNull = false; ClrType = typeof<int64>  ; SqlType = DbType.Int64 }
+                { Name = "Name"      ; SqlTypeAsString = "nvarchar(max)"; AllowNull = false; ClrType = typeof<string> ; SqlType = DbType.String }
+                { Name = "Patronymic"; SqlTypeAsString = "nvarchar(max)"; AllowNull = true ; ClrType = typeof<string> ; SqlType = DbType.String }
+                { Name = "Surname"   ; SqlTypeAsString = "nvarchar(max)"; AllowNull = false; ClrType = typeof<string> ; SqlType = DbType.String }
             ]
 
             Expect.equal metadata.Name "#Persons" "Wrong name of temporary table"
