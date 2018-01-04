@@ -91,7 +91,11 @@ module TemporaryTable =
     module Sql =
 
         let CreateScript metadata =
-            ()
+            sprintf "create table %s (%s)"
+                metadata.Name 
+                (metadata.Columns
+                    |> List.map (fun col -> sprintf "%s %s %s" col.Name col.SqlTypeAsString (if col.AllowNull then "null" else "not null"))
+                    |> (fun columns -> String.Join(",", columns)))
 
         let DropScript metadata =
-            ()
+            sprintf "drop table %s" metadata.Name
