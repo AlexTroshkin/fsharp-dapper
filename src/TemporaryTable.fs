@@ -99,3 +99,7 @@ module TemporaryTable =
 
         let DropScript metadata =
             sprintf "drop table %s" metadata.Name
+
+
+    let Create table =
+        ()
