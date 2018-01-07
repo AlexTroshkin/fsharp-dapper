@@ -14,9 +14,8 @@ let tests =
     testList "Temporary table metadata tests" [
         test "Verify person temporary table metadata" {
             let rows = [{ Id = 1L; Name = "" ; Patronymic = None; Surname = "" }]
-            let table = { Name = "Persons"; Rows = rows }
 
-            let metadata = Metadata.Create table
+            let metadata = Metadata.Create "Persons" rows
             let expectedColumns = [
                 { Name = "Id"        ; SqlTypeAsString = "bigint"       ; AllowNull = false; ClrType = typeof<int64>  ; SqlType = DbType.Int64 }
                 { Name = "Name"      ; SqlTypeAsString = "nvarchar(max)"; AllowNull = false; ClrType = typeof<string> ; SqlType = DbType.String }

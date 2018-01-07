@@ -11,8 +11,7 @@ let tests =
     testList "temporary table data tests" [
         test "Verify person temporary table data" {
             let rows = [{ Id = 1L; Name = "Ivan" ; Patronymic = None; Surname = "Ivanov" }]
-            let table = { Name = "Persons"; Rows = rows }
-            let metadata = Metadata.Create table
+            let metadata = Metadata.Create "Persons" rows
 
             let expectedColumns = 
                 [ ("Id"        , typedefof<int64> )
@@ -24,7 +23,7 @@ let tests =
                 [| 1L :> obj; "Ivan" :> obj; DBNull.Value :> obj; "Ivanov" :> obj |]
             ]
 
-            let dataTable = Data.Create table metadata
+            let dataTable = Data.Create rows metadata
             let actualColumns = 
                 dataTable.Columns 
                 |> Seq.cast<DataColumn> 

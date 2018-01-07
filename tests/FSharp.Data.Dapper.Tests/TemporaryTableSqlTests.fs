@@ -11,8 +11,7 @@ let tests =
     testList "Temporary table sql tests" [
         let ``with metadata of person table`` testFunc () =
             let rows = [{ Id = 1L; Name = ""; Patronymic = None; Surname = "" }]
-            let table = { Name = "Persons"; Rows = rows }
-            let metadata = Metadata.Create table
+            let metadata = Metadata.Create "Persons" rows
 
             testFunc metadata
 

@@ -9,8 +9,9 @@ open System.Reflection
 module TemporaryTable =
 
     type Table = 
-        { Name : string 
-          Rows : IEnumerable }
+        { Data      : DataTable
+          SqlCreate : string 
+          SqlDrop   : string }
 
     type ColumnMetadata =
         { Name            : string 
@@ -22,10 +23,6 @@ module TemporaryTable =
     type TableMetadata = 
         { Name    : string
           Columns : ColumnMetadata list }
-
-    type SqlCommands = 
-        { Create : string 
-          Drop   : string }
 
     module Metadata =
     
@@ -54,10 +51,10 @@ module TemporaryTable =
 
             |> List.ofArray
 
-        let Create (table : Table) = 
-            let name = sprintf "#%s" table.Name
+        let Create nameOfTable rowsOfTable = 
+            let name = sprintf "#%s" nameOfTable
             let tableType = 
-                match Reflection.TryGetTypeOfSeq table.Rows with
+                match Reflection.TryGetTypeOfSeq rowsOfTable with
                     | None         -> failwith "Can't datermine type for temporary table: Collection is empty and not generic type definition"
                     | Some clrType -> clrType
 
@@ -67,7 +64,7 @@ module TemporaryTable =
 
     module Data =
 
-        let Create table metadata =
+        let Create rowsOfTable metadata =
             let generatedTable = new DataTable(metadata.Name)
 
             metadata.Columns
@@ -75,7 +72,7 @@ module TemporaryTable =
             |> Array.map (fun col -> new DataColumn (col.Name, col.ClrType))
             |> (fun cols -> generatedTable.Columns.AddRange(cols))
 
-            table.Rows
+            rowsOfTable
             |> Seq.cast<obj>
             |> Seq.iter (fun rowData -> 
                 let row = 
@@ -106,11 +103,9 @@ module TemporaryTable =
 
 
     let Create name rows =
-        let table = { Name = name; Rows = rows }
-        let metadata = table |> Metadata.Create
-        let dataOfTable = metadata |> Data.Create table
-        let sqlCommands = 
-            { Create = metadata |> Sql.CreateScript
-              Drop   = metadata |> Sql.DropScript }
-        
-        (dataOfTable, sqlCommands)
+        let metadata = Metadata.Create name rows
+        let dataOfTable = Data.Create rows metadata
+
+        { Data      = dataOfTable
+          SqlCreate = Sql.CreateScript metadata
+          SqlDrop   = Sql.DropScript metadata }
