@@ -23,6 +23,10 @@ module TemporaryTable =
         { Name    : string
           Columns : ColumnMetadata list }
 
+    type SqlCommands = 
+        { Create : string 
+          Drop   : string }
+
     module Metadata =
     
         let private CreateColumnsMetadata (tableType : Type) =
@@ -101,5 +105,12 @@ module TemporaryTable =
             sprintf "drop table %s" metadata.Name
 
 
-    let Create table =
-        ()
+    let Create name rows =
+        let table = { Name = name; Rows = rows }
+        let metadata = table |> Metadata.Create
+        let dataOfTable = metadata |> Data.Create table
+        let sqlCommands = 
+            { Create = metadata |> Sql.CreateScript
+              Drop   = metadata |> Sql.DropScript }
+        
+        (dataOfTable, sqlCommands)
