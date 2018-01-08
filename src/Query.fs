@@ -8,6 +8,14 @@ open Dapper
 [<AutoOpen>]
 module Query =
     
+    module Parameters =
+        let (<=>) (key:string) value = key, box value
+
+        let Create (parameters : list<string * obj>) =
+            match parameters with
+            | [] -> None
+            | _  -> Some(dict(parameters) :> obj)
+
     type QueryDefinition = 
         { Script          : string
           Parameters      : obj option

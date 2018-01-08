@@ -20,7 +20,7 @@ let tests =
                   ("Surname"   , typedefof<string>) ] |> Seq.ofList
 
             let expectedRows = [
-                [| 1L :> obj; "Ivan" :> obj; DBNull.Value :> obj; "Ivanov" :> obj |]
+                [| box 1L; box "Ivan"; box DBNull.Value; box "Ivanov" |]
             ]
 
             let dataTable = Data.Create rows metadata

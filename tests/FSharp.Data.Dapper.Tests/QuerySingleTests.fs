@@ -1,10 +1,14 @@
 ﻿module QuerySignleTests
 
 open Expecto
+
 open FSharp.Data.Dapper.Query
+open FSharp.Data.Dapper.Query.Parameters
+
 open InMemoryDatabase.Types
 open InMemoryDatabase.Scripts
 open InMemoryDatabase.Connection
+
 open System.Data
 
 [<Tests>]
@@ -41,7 +45,7 @@ let querySingleTests =
             "Must return None when person not found",
             fun connection ->
 
-                let parameters = Some (dict [ "Id", box 1 ] :> obj) 
+                let parameters = Parameters.Create [ "Id" <=> 1 ]
                 let script = "select * from Person where Id = @Id"
 
                 let person = 
@@ -57,7 +61,7 @@ let querySingleTests =
             "Must return Some when person found",
             fun connection -> 
 
-                let parameters = Some (dict [ "Id", box 1 ] :> obj)
+                let parameters = Parameters.Create [ "Id" <=> 1 ]
                 let script = "select * from Person where Id = @Id"
                 
                 let person = 
