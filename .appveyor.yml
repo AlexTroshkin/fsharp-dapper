@@ -8,3 +8,5 @@ test_script:
   - ps: .\tests.ps1
 after_test:
   - ps: .\pack.ps1
+artifacts:
+  - path: '**\*.nupkg'
