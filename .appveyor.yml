@@ -9,7 +9,7 @@ test_script:
 after_test:
   - ps: .\pack.ps1
 artifacts:
-  - path: '**\*.nupkg
+  - path: '**\*.nupkg'
 
 deploy:
   provider: NuGet
