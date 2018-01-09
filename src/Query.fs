@@ -5,36 +5,27 @@ open System.Data
 open System.Data.SqlClient
 open Dapper
 
+type Query (script : string, ?parameters : obj, ?temporaryTables : Table list) =
+    member __.Script = script
+    member __.Parameters = parameters
+    member __.TemporaryTables = temporaryTables
+
 [<AutoOpen>]
 module Query =
     
     module Parameters =
         let (<=>) (key:string) value = key, box value
-
-        let Create (parameters : list<string * obj>) =
-            match parameters with
-            | [] -> None
-            | _  -> Some(dict(parameters) :> obj)
-
-    type QueryDefinition = 
-        { Script          : string
-          Parameters      : obj option
-          TemporaryTables : Table list option }
-    
-    let DefaultQueryDefinition = 
-        { Script          = String.Empty
-          Parameters      = None
-          TemporaryTables = None }
+        let Create (parameters : list<string * obj>) = dict(parameters) :> obj
 
     let private await task = task |> Async.AwaitTask
-    let private parametersOf queryDefinition =
-        match queryDefinition.Parameters with
+    let private parametersOf (query : Query) =
+        match query.Parameters with
         | Some p -> p
         | None -> null
 
     let private UseTemporaryTables 
         (connection : IDbConnection)
-        (queryDefinition : QueryDefinition) = async {
+        (query : Query) = async {
 
         let createAndCopy table = async {
             let! _ = await <| connection.ExecuteAsync(table.SqlCreate)
@@ -46,7 +37,7 @@ module Query =
             return ()
         }
 
-        match queryDefinition.TemporaryTables with
+        match query.TemporaryTables with
         | None -> ()
         | Some tables ->
             connection.Open()
@@ -58,9 +49,9 @@ module Query =
 
     let private ReleaseTemporaryTables 
         (connection : IDbConnection)
-        (queryDefinition : QueryDefinition) = async {
+        (query : Query) = async {
 
-        match queryDefinition.TemporaryTables with
+        match query.TemporaryTables with
         | None -> ()
         | Some tables -> tables |> List.map (fun table -> table.SqlDrop)
                                 |> (fun dropScripts -> String.Join("\n", dropScripts))
@@ -71,23 +62,23 @@ module Query =
     }
 
     let QueryAsync<'TRow> 
-        (queryDefinition : QueryDefinition) 
+        (query : Query) 
         (connection : IDbConnection) = async {
 
-        do!  UseTemporaryTables connection queryDefinition
-        let! queryResult = await <| connection.QueryAsync<'TRow>(queryDefinition.Script, parametersOf queryDefinition)
-        do!  ReleaseTemporaryTables connection queryDefinition
+        do!  UseTemporaryTables connection query
+        let! queryResult = await <| connection.QueryAsync<'TRow>(query.Script, parametersOf query)
+        do!  ReleaseTemporaryTables connection query
 
         return queryResult
     }
 
     let QuerySingleAsync<'T>
-        (queryDefinition : QueryDefinition)
+        (query : Query)
         (connection : IDbConnection) = async {
 
-        do!  UseTemporaryTables connection queryDefinition
-        let! single = await <| connection.QuerySingleOrDefaultAsync<'T>(queryDefinition.Script, parametersOf queryDefinition)
-        do!  ReleaseTemporaryTables connection queryDefinition
+        do!  UseTemporaryTables connection query
+        let! single = await <| connection.QuerySingleOrDefaultAsync<'T>(query.Script, parametersOf query)
+        do!  ReleaseTemporaryTables connection query
 
         return 
             if Object.ReferenceEquals(null, single) 
@@ -96,12 +87,12 @@ module Query =
     }
 
     let ExecuteAsync 
-        (queryDefinition : QueryDefinition)
+        (query : Query)
         (connection : IDbConnection) = async {
 
-        do!  UseTemporaryTables connection queryDefinition
-        let! countOfAffectedRows = await <| connection.ExecuteAsync(queryDefinition.Script, parametersOf queryDefinition)
-        do!  ReleaseTemporaryTables connection queryDefinition
+        do!  UseTemporaryTables connection query
+        let! countOfAffectedRows = await <| connection.ExecuteAsync(query.Script, parametersOf query)
+        do!  ReleaseTemporaryTables connection query
 
         return countOfAffectedRows
     }

@@ -2,7 +2,7 @@
 
 open Expecto
 
-open FSharp.Data.Dapper.Query
+open FSharp.Data.Dapper
 open FSharp.Data.Dapper.Query.Parameters
 
 open InMemoryDatabase.Types
@@ -35,7 +35,7 @@ let querySingleTests =
                 let script = "select count(1) from Person"
 
                 let countOfPersons = 
-                    { DefaultQueryDefinition with Script = script }
+                    Query(script)
                     |> QuerySingleAsync <| connection
                     |> Async.RunSynchronously
 
@@ -49,7 +49,7 @@ let querySingleTests =
                 let script = "select * from Person where Id = @Id"
 
                 let person = 
-                    { DefaultQueryDefinition with Script = script ; Parameters = parameters }
+                    Query(script, parameters)
                     |> QuerySingleAsync <| connection
                     |> Async.RunSynchronously
 
@@ -65,7 +65,7 @@ let querySingleTests =
                 let script = "select * from Person where Id = @Id"
                 
                 let person = 
-                    { DefaultQueryDefinition with Script = script ; Parameters = parameters }
+                    Query(script, parameters)
                     |> QuerySingleAsync <| connection
                     |> Async.RunSynchronously
                 
