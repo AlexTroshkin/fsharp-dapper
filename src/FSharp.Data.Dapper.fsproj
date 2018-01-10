@@ -6,12 +6,13 @@
     <PackageProjectUrl>https://github.com/AlexTroshkin/fsharp-dapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/AlexTroshkin/fsharp-dapper</RepositoryUrl>
     <PackageTags>fsharp dapper</PackageTags>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Authors>Alex Troshkin</Authors>
     <Company />
-    <FileVersion>1.0.0.2</FileVersion>
-    <AssemblyVersion>1.0.0.2</AssemblyVersion>
-    <PackageReleaseNotes>Simplified query creation with default parameters</PackageReleaseNotes>
+    <FileVersion>1.0.0.3</FileVersion>
+    <AssemblyVersion>1.0.0.3</AssemblyVersion>
+    <PackageReleaseNotes>Closed issue #1 - https://github.com/AlexTroshkin/fsharp-dapper/issues/1
+    Provide a way for work with temporary table when collection contains primitive type</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Reflection.fs" />

@@ -5,7 +5,7 @@ open System.Data
 open System.Data.SqlClient
 open Dapper
 
-type Query (script : string, ?parameters : obj, ?temporaryTables : Table list) =
+type Query (script : string, ?parameters : obj, ?temporaryTables : TemporaryTable list) =
     member __.Script = script
     member __.Parameters = parameters
     member __.TemporaryTables = temporaryTables
