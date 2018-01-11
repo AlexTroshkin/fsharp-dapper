@@ -1,19 +1,31 @@
 image: Visual Studio 2017
+
+shallow_clone: true
+
+branches:
+  only:
+  - master
+
+skip_branch_with_pr: true
+
+skip_tags: true
+
+skip_commits:
+  files:
+  - LICENCE
+  - README.md
+
+nuget:
+  disable_publish_on_pr: true
+
 build_script:
   - ps: .\build.ps1
-test:
-  assemblies:
-    - '**\*.Tests.dll'
-test_script:
-  - ps: .\tests.ps1
-after_test:
-  - ps: .\pack.ps1
-artifacts:
-  - path: '**\*.nupkg'
 
-deploy:
-  provider: NuGet
-  api_key: 
-    secure: kyG+OoOaoRF4/dTPfLQ6KMWZLtAeWh8ssqSYZ7NE0mLlEzUE3sLOB37tzWEPFZs1
-  skip_symbols: false
-  artifact: /.*\.nupkg/
+test: off
+
+deploy: off
+
+artifacts:
+- path: artifacts/build
+- path: artifacts/packages
+- path: artifacts/test

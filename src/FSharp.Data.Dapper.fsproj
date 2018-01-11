@@ -1,19 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Alex Troshkin</Authors>    
     <Description>The wrapper above the 'Dapper' library allows you to write more familiar code in the F # language. It also contains a functional for more simple work with temporary tables</Description>
-    <PackageProjectUrl>https://github.com/AlexTroshkin/fsharp-dapper</PackageProjectUrl>
+    
+    <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/AlexTroshkin/fsharp-dapper</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/AlexTroshkin/fsharp-dapper</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/AlexTroshkin/fsharp-dapper/blob/master/LICENCE</PackageLicenseUrl>
     <PackageTags>fsharp dapper</PackageTags>
+    
+    <!--<IncludeSymbols>true</IncludeSymbols>
+    <IncludeSource>true</IncludeSource>-->
+    
     <Version>1.0.3</Version>
-    <Authors>Alex Troshkin</Authors>
-    <Company />
-    <FileVersion>1.0.0.3</FileVersion>
-    <AssemblyVersion>1.0.0.3</AssemblyVersion>
-    <PackageReleaseNotes>Closed issue #1 - https://github.com/AlexTroshkin/fsharp-dapper/issues/1
-    Provide a way for work with temporary table when collection contains primitive type</PackageReleaseNotes>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+    
   <ItemGroup>
     <Compile Include="Reflection.fs" />
     <Compile Include="SqlTypeMapping.fs" />
