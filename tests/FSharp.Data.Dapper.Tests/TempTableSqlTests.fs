@@ -18,7 +18,7 @@ let tests =
         yield! testFixture ``with schema of person table`` [
             "Verify create table script",
             fun schemaOfTable -> 
-                let expectedSql = "create temp table TPersons (Id BigInt not null,Name NVarChar(Max) not null,Patronymic NVarChar(Max) null,Surname NVarChar(Max) not null)"
+                let expectedSql = "create temp table TPersons (Id BigInt not null,Name NText not null,Patronymic NText null,Surname NText not null)"
                 let actualSql = Sql.CreateScript Sqlite schemaOfTable
 
                 Expect.equal actualSql expectedSql "Create scripts are not equals"

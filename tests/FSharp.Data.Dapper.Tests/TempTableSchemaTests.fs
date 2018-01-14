@@ -31,19 +31,19 @@ let tests =
                   AllowNull = false
                   TypeCorellation = 
                     { ClrTypeRepresentation = typeof<string>
-                      SqlTypeRepresentation = SqlTypeRepresentation(SqlDbType.NVarChar, "NVarChar", ["Max"]) }}
+                      SqlTypeRepresentation = SqlTypeRepresentation(SqlDbType.NText, "NText") }}
 
                 { Name = "Patronymic"
                   AllowNull = true
                   TypeCorellation = 
                     { ClrTypeRepresentation = typeof<string>
-                      SqlTypeRepresentation = SqlTypeRepresentation(SqlDbType.NVarChar, "NVarChar", ["Max"]) }}
+                      SqlTypeRepresentation = SqlTypeRepresentation(SqlDbType.NText, "NText") }}
 
                 { Name = "Surname"
                   AllowNull = false
                   TypeCorellation = 
                     { ClrTypeRepresentation = typeof<string>
-                      SqlTypeRepresentation = SqlTypeRepresentation(SqlDbType.NVarChar, "NVarChar", ["Max"]) }}
+                      SqlTypeRepresentation = SqlTypeRepresentation(SqlDbType.NText, "NText") }}
             ]
 
             Expect.equal schemaOfTable.Name "TPersons" "Wrong name of temp table"

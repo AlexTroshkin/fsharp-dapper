@@ -42,7 +42,7 @@ module SqlClrTypeCorellation =
 
                 { SqlTypeRepresentation = SqlTypeRepresentation(SqlDbType.NChar, "NChar", ["1"])
                   ClrTypeRepresentation = typedefof<char> }
-                { SqlTypeRepresentation = SqlTypeRepresentation(SqlDbType.Bit, "NVarChar", ["Max"])
+                { SqlTypeRepresentation = SqlTypeRepresentation(SqlDbType.NVarChar, "NVarChar", ["Max"])
                   ClrTypeRepresentation = typedefof<string> }
                 { SqlTypeRepresentation = SqlTypeRepresentation(SqlDbType.UniqueIdentifier, "UniqueIdentifier")
                   ClrTypeRepresentation = typedefof<Guid> }
@@ -92,7 +92,7 @@ module SqlClrTypeCorellation =
 
                 { SqlTypeRepresentation = SqlTypeRepresentation(SqlDbType.NChar, "NChar", ["1"])
                   ClrTypeRepresentation = typedefof<char> }
-                { SqlTypeRepresentation = SqlTypeRepresentation(SqlDbType.Bit, "NVarChar", ["Max"])
+                { SqlTypeRepresentation = SqlTypeRepresentation(SqlDbType.NText, "NText")
                   ClrTypeRepresentation = typedefof<string> }
                 { SqlTypeRepresentation = SqlTypeRepresentation(SqlDbType.UniqueIdentifier, "UniqueIdentifier")
                   ClrTypeRepresentation = typedefof<Guid> }

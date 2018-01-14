@@ -2,6 +2,8 @@
 
 open System.Data
 
+[<StructuralComparison>]
+[<StructuralEquality>]
 type SqlTypeRepresentation (asEnum : SqlDbType, asString : string, ?parameters : string list) = 
     struct
         member __.AsEnum = asEnum
