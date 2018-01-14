@@ -6,9 +6,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="InMemoryDatabase.fs" />
-    <Compile Include="TemporaryTableSqlTests.fs" />
-    <Compile Include="TemporaryTableDataTests.fs" />
-    <Compile Include="TemporaryTableMetadataTests.fs" />
+    <Compile Include="Fixtures.fs" />
+    <Compile Include="QueryWithTemporaryTableTests.fs" />
+
+    <Compile Include="TempTableSqlTests.fs" />
+    <Compile Include="TempTableDataTests.fs" />
+    <Compile Include="TempTableSchemaTests.fs" />
     <Compile Include="QuerySingleTests.fs" />
     <Compile Include="QueryTests.fs" />
     <Compile Include="ExecuteTests.fs" />

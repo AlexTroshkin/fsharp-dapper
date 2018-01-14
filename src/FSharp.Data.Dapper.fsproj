@@ -21,8 +21,10 @@
   </PropertyGroup>
     
   <ItemGroup>
+    <Compile Include="Enums.fs" />
+    <Compile Include="SqlTypeRepresentation.fs" />
+    <Compile Include="SqlClrTypeCorrelation.fs" />
     <Compile Include="Reflection.fs" />
-    <Compile Include="SqlTypeMapping.fs" />
     <Compile Include="TemporaryTable.fs" />
     <Compile Include="Query.fs" />
   </ItemGroup>

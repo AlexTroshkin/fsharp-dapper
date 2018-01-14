@@ -1,17 +1,20 @@
-﻿module TemporaryTableDataTests
+﻿module TempTableDataTests
+
+open System
+open System.Data
 
 open Expecto
 open InMemoryDatabase.Types
-open FSharp.Data.Dapper.TemporaryTable
-open System.Data
-open System
+
+open FSharp.Data.Dapper.TempTable
+open FSharp.Data.Dapper.Enums
 
 [<Tests>]
 let tests =
     testList "Temp table data tests" [
         test "Verify data of person temp table" {
             let rows = [{ Id = 1L; Name = "Ivan" ; Patronymic = None; Surname = "Ivanov" }]
-            let metadata = Metadata.Create "Persons" rows
+            let metadata = Schema.Create Sqlite "Persons" rows
 
             let expectedColumns = 
                 [ ("Id"        , typedefof<int64> )
@@ -43,7 +46,7 @@ let tests =
             let expectedTypeOfColumn = typedefof<int32>
 
             let identificators = seq { 1 .. 5 }
-            let metadataOfTable = Metadata.CreateWithSingleColumn "PersonIdentificators" "Id" identificators
+            let metadataOfTable = Schema.CreateWithSingleColumn Sqlite "PersonIdentificators" "Id" identificators
 
             let dataOfTable = Data.CreateWithSingleColumn identificators metadataOfTable
             let actualColumn = dataOfTable.Columns.[0]

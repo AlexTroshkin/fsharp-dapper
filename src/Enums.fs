@@ -1,8 +1,10 @@
-﻿module Enums
+﻿namespace FSharp.Data.Dapper
 
 open System
 
-[<Flags>]
-type DatabaseType =
-    | SqlServer
-    | Sqlite
+module Enums =
+
+    [<Flags>]
+    type DatabaseType =
+        | SqlServer
+        | Sqlite

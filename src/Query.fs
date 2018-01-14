@@ -5,7 +5,7 @@ open System.Data
 open System.Data.SqlClient
 open Dapper
 
-type Query (script : string, ?parameters : obj, ?temporaryTables : TemporaryTable list) =
+type Query (script : string, ?parameters : obj, ?temporaryTables : GeneratedTempTable list) =
     member __.Script = script
     member __.Parameters = parameters
     member __.TemporaryTables = temporaryTables
@@ -65,7 +65,7 @@ module Query =
         (query : Query) 
         (connection : IDbConnection) = async {
 
-        do!  UseTemporaryTables connection query
+        UseTemporaryTables connection query |> Async.RunSynchronously
         let! queryResult = await <| connection.QueryAsync<'TRow>(query.Script, parametersOf query)
         do!  ReleaseTemporaryTables connection query
 
