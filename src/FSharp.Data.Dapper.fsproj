@@ -25,7 +25,8 @@
     <Compile Include="SqlTypeRepresentation.fs" />
     <Compile Include="SqlClrTypeCorrelation.fs" />
     <Compile Include="Reflection.fs" />
-    <Compile Include="TemporaryTable.fs" />
+    <Compile Include="BulkInsert.fs" />
+    <Compile Include="TempTable.fs" />
     <Compile Include="Query.fs" />
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />

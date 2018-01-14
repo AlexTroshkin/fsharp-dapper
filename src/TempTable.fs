@@ -4,6 +4,7 @@ open System
 open System.Collections
 open System.Data
 open System.Reflection
+open FSharp.Data.Dapper.Enums
 
 type TempTable =
     | ``Temp table`` of
@@ -21,10 +22,8 @@ type GeneratedTempTable =
 
 [<AutoOpen>]
 module TempTable =
-    open Enums
 
     module Schema =
-        open Enums
 
         type Column =
             { Name            : string 

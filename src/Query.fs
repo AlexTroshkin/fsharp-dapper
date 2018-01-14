@@ -29,10 +29,7 @@ module Query =
 
         let createAndCopy table = async {
             let! _ = await <| connection.ExecuteAsync(table.SqlCreate)
-            use  bulkCopy = new SqlBulkCopy(connection :?> SqlConnection)
-
-            bulkCopy.DestinationTableName <- table.Data.TableName
-            do! bulkCopy.WriteToServerAsync(table.Data) |> Async.AwaitTask
+            BulkInsert.Execute connection table.Data
 
             return ()
         }
@@ -65,7 +62,7 @@ module Query =
         (query : Query) 
         (connection : IDbConnection) = async {
 
-        UseTemporaryTables connection query |> Async.RunSynchronously
+        do! UseTemporaryTables connection query
         let! queryResult = await <| connection.QueryAsync<'TRow>(query.Script, parametersOf query)
         do!  ReleaseTemporaryTables connection query
 
