@@ -17,7 +17,7 @@ open FSharp.Data.Dapper.Query.Parameters
 
 let tryFindUser 
     (connection : IDbConnection) 
-    (userId     : int          )
+    (userId     : int          ) =
 
     let parameters = Parameters.Create [ "Id" <=> userId ]
     let script     = "select * from Users where Id = @Id"
