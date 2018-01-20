@@ -23,10 +23,46 @@ let tryFindUser
     let script     = "select * from Users where Id = @Id"
     let query      = Query (script, parameters)
     
-    let result = (query |> QuerySingleAsync <| connection) |> Async.RunSynchronously
+    let result = (query |> QuerySingleAsync<User> <| connection) |> Async.RunSynchronously
     
     // QuerySingleAsync return 'Some' when record is found and 'None' when not found
     match result with
     | Some user -> Some user
     | None      -> None
 ```    
+
+###### QueryAsync
+```fsharp
+open FSharp.Data.Dapper
+
+let getAllUsers (connection : IDbConnection) =
+
+    let script = "select * from Users"
+    let query  = Query (script)
+    
+    let users = (query |> QueryAsync<User> <| connection) |> Async.RunSynchronously
+    
+    users
+```
+
+###### ExecuteAsync
+```fsharp
+open FSharp.Data.Dapper
+
+let updateUser
+    (connection : IDbConnection)
+    (user       : User) =
+
+    let script = """
+        update Users
+            set Name     = @Name,
+                Login    = @Login,
+                Password = @Password
+            where Id = @Id
+    """
+    
+    let query  = Query(script, user) 
+    let countOfAffectedRows = (query |> ExecuteAsync <| connection) |> Async.RunSynchronously
+    
+    ()
+```
