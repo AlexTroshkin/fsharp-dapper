@@ -8,6 +8,25 @@ The wrapper above the 'Dapper' library allows you to write more familiar code in
 
 [![Build history](https://buildstats.info/appveyor/chart/AlexTroshkin/fsharp-dapper)](https://ci.appveyor.com/project/AlexTroshkin/fsharp-dapper/history)
 
+## Support Option<'T> fields as parameters
+```fsharp
+type Person =
+    { Id         : int
+      Name       : string
+      Patronymic : string option  // by default if you use this object in the query - you get an exception
+      Surname    : string }
+```
+Add the following line when starting the application, so that the fields with the Option type <T> are treated like Nullable <T>
+```fsharp
+open FSharp.Data.Dapper
+
+[<EntryPoint>]
+let main argv =
+    OptionHandler.RegisterTypes()
+    
+    // ...
+```
+
 ## Sample Queries
 
 ###### QuerySingleAsync
