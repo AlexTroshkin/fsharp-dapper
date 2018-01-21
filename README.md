@@ -70,6 +70,10 @@ let updateUser
 ## Queries with temporary tables
 The library provides 2 types of temporary tables, the first type with many columns and the second with one column (for example you need to send a list of identifiers to the query and nothing more)
 
+At the moment, temporary tables are supported for the following databases:
+- Microsoft SQL Server
+- Sqlite
+
 ###### Temp table with one column
 ```fsharp
 open FSharp.Data.Dapper
@@ -95,3 +99,32 @@ let findPersons
     (query |> QueryAsync <| connection) |> Async.RunSynchronously
 ```
 
+###### Temp table with multiple columns
+```fsharp
+open FSharp.Data.Dapper
+open FSharp.Data.Dapper.TempTable
+open FSharp.Data.Dapper.Query.Parameters
+
+let savePersons
+    (persons    : person list  )
+    (connection : IDbConnection) =
+
+    let tempTable = TempTable.Create 
+                        ``Temp table``("TPerson", persons)
+                        DatabaseType.Sqlite
+
+    // sqlite version 3.15
+    let script = """
+        update Person
+            set (Name, Surname) = select (TPerson.Name, TPerson.Surname
+                                            from TPerson
+                                            where Person.Id = TPerson.Id)
+                                            
+        where exists (select 1 from TPerson where TPerson.Id = Person.Id)
+    """
+
+    let query = Query (script, temporaryTables = [tempTable])
+    let countOfAffectedRows = (query |> ExecuteAsync <| connection) |> Async.RunSynchronously
+
+    ()
+```
