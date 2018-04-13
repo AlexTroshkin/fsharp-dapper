@@ -1,6 +1,8 @@
 storage: none
 source https://nuget.org/api/v2
 
+nuget FSharp.Core
+
 nuget Dapper
 
 nuget Expecto

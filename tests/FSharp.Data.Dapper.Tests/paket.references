@@ -1,4 +1,6 @@
-﻿Expecto
+﻿FSharp.Core
+
+Expecto
 Expecto.BenchmarkDotNet
 Expecto.FsCheck
 
