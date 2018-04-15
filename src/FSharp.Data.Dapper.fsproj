@@ -12,6 +12,7 @@
     <Compile Include="TempTable.fs" />
     <Compile Include="Query.fs" />
     <Compile Include="Connection.fs" />
+    <Compile Include="Table.fs" />
     <Compile Include="QueryAsyncRunner.fs" />
     <Compile Include="QuerySeqAsyncBuilder.fs" />
     <Compile Include="QuerySingleOptionAsyncBuilder.fs" />

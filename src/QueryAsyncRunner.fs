@@ -16,17 +16,17 @@ module QueryAsyncRunner =
           Values     : Table list
           Parameters : obj option }
 
-    let unwrapConnection connection =
+    let private unwrapConnection connection =
         match connection with
         | SqlServerConnection c -> c
         | SqliteConnection c -> c
 
-    let unwrapScript state =
+    let private unwrapScript state =
         match state.Script with
         | Some s -> s
         | None   -> failwith "Script should not be empty"
 
-    let unwrapParameters state =
+    let private unwrapParameters state =
         match state.Parameters with
         | Some p -> p
         | None   -> null
