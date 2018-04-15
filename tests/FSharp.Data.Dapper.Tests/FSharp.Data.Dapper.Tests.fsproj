@@ -1,24 +1,21 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="InMemoryDatabase.fs" />
-    <Compile Include="Fixtures.fs" />
+    <ProjectReference Include="..\..\src\FSharp.Data.Dapper.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SqliteDatabase.fs" />
     <Compile Include="QueryWithTemporaryTableTests.fs" />
-
     <Compile Include="TempTableSqlTests.fs" />
     <Compile Include="TempTableDataTests.fs" />
     <Compile Include="TempTableSchemaTests.fs" />
-    <Compile Include="QuerySingleTests.fs" />
-    <Compile Include="QueryTests.fs" />
-    <Compile Include="ExecuteTests.fs" />
+    <Compile Include="QuerySeqAsyncTests.fs" />
+    <Compile Include="QuerySingleAsyncTests.fs" />
+    <Compile Include="QuerySingleOptionAsyncTests.fs" />
     <Compile Include="Program.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\FSharp.Data.Dapper.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

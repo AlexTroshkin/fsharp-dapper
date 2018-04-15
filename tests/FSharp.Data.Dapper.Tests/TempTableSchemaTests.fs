@@ -2,16 +2,13 @@
 
 open Expecto
 
-open InMemoryDatabase.Types
+open SqliteDatabase.Types
 
 open System.Data
 
 open FSharp.Data.Dapper
 open FSharp.Data.Dapper.Enums
-open FSharp.Data.Dapper.TempTable
 open FSharp.Data.Dapper.TempTable.Schema
-open FSharp.Data.Dapper
-open FSharp.Data.Dapper
 
 [<Tests>]
 let tests = 

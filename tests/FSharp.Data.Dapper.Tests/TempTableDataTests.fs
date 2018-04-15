@@ -4,7 +4,7 @@ open System
 open System.Data
 
 open Expecto
-open InMemoryDatabase.Types
+open SqliteDatabase.Types
 
 open FSharp.Data.Dapper.TempTable
 open FSharp.Data.Dapper.Enums

@@ -7,8 +7,6 @@ open FSharp.Data.Dapper
 let main argv =
     OptionHandler.RegisterTypes()
 
-    InMemoryDatabase.Connection.Initialize()
-    let ret = runTestsInAssembly defaultConfig argv
-    InMemoryDatabase.Connection.Shutdown()
-    
-    ret
+    SqliteDatabase.Run (fun _ ->
+        runTestsInAssembly defaultConfig argv
+    )

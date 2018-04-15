@@ -11,19 +11,19 @@ open InMemoryDatabase.Connection
 
 open System.Data
 
-let ``with connection`` testFunc () =
-    use connection = CreateDedicatedConnection None
+// let ``with connection`` testFunc () =
+//     use connection = CreateDedicatedConnection None
     
-    testFunc connection
+//     testFunc connection
 
-let ``connection with empty person table`` testFunc () =
-    let withScripts = Some [ ``create person table`` ]
-    use connection = CreateDedicatedConnection withScripts
+// let ``connection with empty person table`` testFunc () =
+//     let withScripts = Some [ ``create person table`` ]
+//     use connection = CreateDedicatedConnection withScripts
 
-    testFunc connection
+//     testFunc connection
         
-let ``connection with filled person table`` testFunc () =
-    let withScripts = Some [``create person table``; ``insert persons`` ]
-    use connection = CreateDedicatedConnection withScripts
+// let ``connection with filled person table`` testFunc () =
+//     let withScripts = Some [``create person table``; ``insert persons`` ]
+//     use connection = CreateDedicatedConnection withScripts
 
-    testFunc connection            
+//     testFunc connection            

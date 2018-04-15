@@ -11,7 +11,11 @@
     <Compile Include="BulkInsert.fs" />
     <Compile Include="TempTable.fs" />
     <Compile Include="Query.fs" />
-    <Compile Include="SqlQueryAsyncBuilder.fs" />
+    <Compile Include="Connection.fs" />
+    <Compile Include="QueryAsyncRunner.fs" />
+    <Compile Include="QuerySeqAsyncBuilder.fs" />
+    <Compile Include="QuerySingleOptionAsyncBuilder.fs" />
+    <Compile Include="QuerySingleAsyncBuilder.fs" />
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>
