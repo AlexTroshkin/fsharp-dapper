@@ -136,3 +136,36 @@ module Table =
         let Create connection nameOfTable rows =
             { Name    = mkName connection nameOfTable
               Columns = mkColumns connection rows }
+
+    module Scripts =
+
+        type Scripts = 
+            { Create : string 
+              Drop   : string }       
+
+        let private mkSqliteScripts (scheme : Schema.Table) = 
+            let columnToSql (column : Schema.Column) = 
+                sprintf "%s %s %s"
+                    column.Name                    
+                    (match column.Type.Parameter with
+                     | Some parameter -> sprintf "%s%s" column.Type.SqlName parameter
+                     | None           -> column.Type.SqlName)
+                    (if column.AllowNull then "NULL" else "NOT NULL")
+
+            let createScript =
+                sprintf "CREATE TEMP TABLE %s (%s)"
+                    scheme.Name
+                    (scheme.Columns 
+                        |> Array.map columnToSql
+                        |> String.concat ",")
+
+            let dropSCript =
+                sprintf "DROP TABLE %s" scheme.Name
+
+            { Create = createScript
+              Drop   = dropSCript }
+
+        let Create connection (scheme : Schema.Table) = 
+            match connection with
+            | SqliteConnection _ -> mkSqliteScripts scheme
+            | SqlServerConnection _ -> failwith "not supported at this moment"
