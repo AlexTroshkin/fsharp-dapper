@@ -9,7 +9,6 @@
   <ItemGroup>
     <Compile Include="SqliteDatabase.fs" />
     <Compile Include="QueryWithTemporaryTableTests.fs" />
-    <Compile Include="TempTableSqlTests.fs" />
     <Compile Include="TempTableDataTests.fs" />
     <Compile Include="TableTests.fs" />
     <Compile Include="QuerySeqAsyncTests.fs" />
