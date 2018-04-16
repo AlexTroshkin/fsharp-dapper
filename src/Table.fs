@@ -40,7 +40,7 @@ module Table =
             { SqlName = "VarBinary"        ; Parameter = Some "(max)"  ; ClrType = typedefof<byte array>     }
         ]
 
-        let private find mappings clrType = List.find (fun m -> m.ClrType = clrType) mappings
+        let private find mappings clrType = mappings |> List.find (fun m -> m.ClrType = clrType)
 
         let Find connection clrType = 
             match connection with
@@ -106,7 +106,7 @@ module Table =
             | _ -> 
                 { Name = name 
                   Type = TypeMapping.Find connection clrType
-                  AllowNull = true }
+                  AllowNull = false }
 
         (*
             Make columns from type of sequence (rows)
@@ -136,5 +136,3 @@ module Table =
         let Create connection nameOfTable rows =
             { Name    = mkName connection nameOfTable
               Columns = mkColumns connection rows }
-
-        let r = Create (SqliteConnection (null)) "" Seq.empty
