@@ -2,6 +2,7 @@ namespace FSharp.Data.Dapper
 
 open System
 open System.Reflection
+open System.Data
 
 module Table =
 
@@ -169,3 +170,37 @@ module Table =
             match connection with
             | SqliteConnection _ -> mkSqliteScripts scheme
             | SqlServerConnection _ -> failwith "not supported at this moment"
+
+    module Data =
+        open Schema
+
+        let private (|Values|Table|) scheme =
+            if scheme.Columns.Length = 1 then
+                Values scheme.Columns.[0]
+            else
+                Table scheme.Columns
+
+        let Create scheme rows =
+            let table = new DataTable(scheme.Name)
+
+            match scheme with
+            | Values column -> 
+                table.Columns.Add (new DataColumn(column.Name, column.Type.ClrType))
+                for row in rows do table.Rows.Add ([|row|]) |> ignore
+                table                
+            | Table columns -> 
+                columns |> Array.map (fun column -> new DataColumn (column.Name, column.Type.ClrType))
+                        |> table.Columns.AddRange
+                
+                for row in rows do 
+                    columns |> Array.map (fun column -> 
+                                let value = row.GetType().GetProperty(column.Name).GetValue(row)
+                                if Object.ReferenceEquals(null, value) then 
+                                    (DBNull.Value :> obj)
+                                else
+                                    value) 
+                            |> table.Rows.Add
+                            |> ignore                    
+
+                table
+        
