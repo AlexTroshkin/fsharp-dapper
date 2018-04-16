@@ -19,13 +19,6 @@ module Connection =
 
     let mkShared () = new SqliteConnection (mkConnectionString "MASTER")
     let mkDedicated () = new SqliteConnection (mkDedicatedConnectionString())
-    
-module Queries = 
-    let private connectionF () = Connection.SqliteConnection (Connection.mkShared())
-
-    let querySeqAsync<'R>          = querySeqAsync<'R> (connectionF)
-    let querySingleAsync<'R>       = querySingleAsync<'R> (connectionF)
-    let querySingleOptionAsync<'R> = querySingleOptionAsync<'R> (connectionF)
 
 module Types =
 
@@ -36,9 +29,28 @@ module Types =
           Patronymic : string option
           Surname    : string }
 
+module Queries = 
+    let private connectionF () = Connection.SqliteConnection (Connection.mkShared())
+
+    let querySeqAsync<'R>          = querySeqAsync<'R> (connectionF)
+    let querySingleAsync<'R>       = querySingleAsync<'R> (connectionF)
+    let querySingleOptionAsync<'R> = querySingleOptionAsync<'R> (connectionF)
+
+    module Person =
+        let FindByName name = querySingleAsync<Types.Person> {
+            script "select * from Person where Name = @Name limit 1"
+            parameters (dict ["Name", box name])
+        }
+
+        let TryFindByName name = querySingleOptionAsync<Types.Person> {
+            script "select * from Person where Name = @Name limit 1"
+            parameters (dict ["Name", box name])
+        }
+
+
 let private masterConnection = Connection.mkShared()
-let masterConnectionF () = Connection.SqliteConnection (Connection.mkShared())
-let initializationQuery = querySingleOptionAsync<int> masterConnectionF {
+let private masterConnectionF () = Connection.SqliteConnection (Connection.mkShared())
+let private initializationQuery = querySingleOptionAsync<int> masterConnectionF {
     script """
         CREATE TABLE Person (
             Id integer primary key,
