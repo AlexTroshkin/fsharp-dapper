@@ -7,6 +7,8 @@ open FSharp.Data.Dapper.Table.Schema
 open FSharp.Data.Dapper.Table.Scripts
 
 open SqliteDatabase.Types
+open System
+open System.Data
 
 let dummyConnection = SqliteConnection (null)
 
@@ -16,7 +18,7 @@ module ExpectedSchemes =
     let private stringTypeMapping = TypeMapping.Find dummyConnection typeof<string>
 
     let Person = 
-        { Name = "TPerson"
+        { Name    = "TPerson"
           Columns = 
           [|
             { Name      = "Id"
@@ -34,6 +36,16 @@ module ExpectedSchemes =
             { Name      = "Surname"
               AllowNull = false
               Type      = stringTypeMapping }
+          |] 
+        }
+
+    let PersonID =
+        { Name    = "PersonID" 
+          Columns = 
+          [|
+            { Name      = "Value"
+              AllowNull = false
+              Type      = TypeMapping.Find dummyConnection typeof<int> }          
           |] 
         }
 
@@ -77,4 +89,49 @@ let scriptsTests =
             Expect.equal actualScripts expectedScripts "Wrong scripts"
         }
 
+    ]
+
+[<Tests>]
+let dataTests = 
+    testList "Table -> Data" [
+        test "Check DataTable for 'Person' table" {
+            let expectedColumns = 
+                [ ("Id"        , typedefof<int64> )
+                  ("Name"      , typedefof<string>)
+                  ("Patronymic", typedefof<string>)
+                  ("Surname"   , typedefof<string>) ] |> Seq.ofList
+
+            let expectedRows = [
+                [| box 1L; box "Ivan"; box DBNull.Value; box "Ivanov" |]
+            ]
+
+            let rows = [{ Id = 1L; Name = "Ivan" ; Patronymic = None; Surname = "Ivanov" }]
+            let data = Data.Create ExpectedSchemes.Person rows
+
+            let actualColumns = 
+                data.Columns |> Seq.cast<DataColumn>
+                             |> Seq.map (fun c -> (c.ColumnName, c.DataType))
+
+            let actualRows =
+                data.Rows |> Seq.cast<DataRow>
+                          |> Seq.map (fun r -> r.ItemArray)                 
+
+            Expect.sequenceEqual actualColumns expectedColumns "Wrong data table columns"
+            Expect.sequenceEqual actualRows    expectedRows    "Wrong data table rows"
+        }
+
+        test "Check DataTable for 'PersonID' table" {
+            let expectedColumn = ("Value", typedefof<int32>)
+            let expectedRows = seq { 1 .. 10 } 
+
+            let data = Data.Create ExpectedSchemes.PersonID expectedRows 
+
+            let actualColumn = (data.Columns.[0].ColumnName, data.Columns.[0].DataType)
+            let actualRows =
+                data.Rows |> Seq.cast<DataRow>
+                          |> Seq.map (fun row -> row.["Value"] :?> int)
+
+            Expect.equal         actualColumn expectedColumn  "Wrong data table column"
+            Expect.sequenceEqual actualRows   expectedRows    "Wrong data table rows"
+        }
     ]

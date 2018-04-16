@@ -180,13 +180,13 @@ module Table =
             else
                 Table scheme.Columns
 
-        let Create scheme rows =
+        let Create scheme (rows : seq<'a>) =
             let table = new DataTable(scheme.Name)
 
             match scheme with
             | Values column -> 
                 table.Columns.Add (new DataColumn(column.Name, column.Type.ClrType))
-                for row in rows do table.Rows.Add ([|row|]) |> ignore
+                for row in rows do table.Rows.Add ([|box row|]) |> ignore
                 table                
             | Table columns -> 
                 columns |> Array.map (fun column -> new DataColumn (column.Name, column.Type.ClrType))
