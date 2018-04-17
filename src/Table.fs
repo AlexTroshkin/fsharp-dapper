@@ -3,6 +3,7 @@ namespace FSharp.Data.Dapper
 open System
 open System.Reflection
 open System.Data
+open System.Data.Common
 
 module Table =
 
@@ -203,4 +204,41 @@ module Table =
                             |> ignore                    
 
                 table
-        
+    
+    module Operations =
+
+        module private BulkInsert =
+            let mkInsertScript dataTableName parameterNames =
+                sprintf "INSERT INTO %s VALUES (%s)" dataTableName (String.concat "," parameterNames)
+
+            let mkParameterNames columns = 
+                columns |> Seq.cast<DataColumn>
+                        |> Seq.map (fun column -> sprintf "@%s" column.ColumnName)
+
+            let mkParameter (command : IDbCommand) name =
+                let parameter = command.CreateParameter()
+                parameter.ParameterName <- name
+                parameter
+
+            let mkCommand (connection : IDbConnection) script =
+                let command = connection.CreateCommand()
+                command.CommandText <- script
+                command
+
+        let BulkInsert connection (dataTable : DataTable) = 
+            let parameterNames = BulkInsert.mkParameterNames dataTable.Columns
+            let insertScript   = BulkInsert.mkInsertScript dataTable.TableName parameterNames
+            let command        = BulkInsert.mkCommand connection insertScript
+
+            parameterNames 
+            |> Seq.map ((BulkInsert.mkParameter command) >> command.Parameters.Add)
+            |> ignore
+            
+            let parameters = command.Parameters |> Seq.cast<DbParameter>
+
+            for row in dataTable.Rows do                
+                parameters 
+                |> Seq.iter2 (fun parameter value -> parameter.Value <- value) 
+                <| row.ItemArray
+
+                command.ExecuteNonQuery() |> ignore
