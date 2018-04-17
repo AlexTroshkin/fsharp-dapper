@@ -42,12 +42,40 @@ module Table =
             { SqlName = "VarBinary"        ; Parameter = Some "(max)"  ; ClrType = typedefof<byte array>     }
         ]
 
+        let private sqlServerMappings = [
+            { SqlName = "Bit"              ; Parameter = None          ; ClrType = typedefof<bool>           }
+            { SqlName = "TinyInt"          ; Parameter = None          ; ClrType = typedefof<byte>           }
+            { SqlName = "SamllInt"         ; Parameter = None          ; ClrType = typedefof<sbyte>          }
+            { SqlName = "SamllInt"         ; Parameter = None          ; ClrType = typedefof<int16>          }
+            { SqlName = "Int"              ; Parameter = None          ; ClrType = typedefof<uint16>         }
+            { SqlName = "Int"              ; Parameter = None          ; ClrType = typedefof<int32>          }        
+            { SqlName = "BigInt"           ; Parameter = None          ; ClrType = typedefof<uint32>         }
+            { SqlName = "BigInt"           ; Parameter = None          ; ClrType = typedefof<int64>          }        
+            { SqlName = "Decimal"          ; Parameter = Some "(20)"   ; ClrType = typedefof<uint64>         }
+                
+            { SqlName = "Real"             ; Parameter = None          ; ClrType = typedefof<single>         }
+            { SqlName = "Float"            ; Parameter = None          ; ClrType = typedefof<float>          }
+            { SqlName = "Float"            ; Parameter = None          ; ClrType = typedefof<double>         }
+            { SqlName = "Deciaml"          ; Parameter = Some "(29,4)" ; ClrType = typedefof<decimal>        }
+         
+            { SqlName = "NChar"            ; Parameter = Some "(1)"    ; ClrType = typedefof<char>           }
+            { SqlName = "NVarChar"         ; Parameter = Some "(max)"  ; ClrType = typedefof<string>         }
+          
+            { SqlName = "UniqueIdentifier" ; Parameter = None          ; ClrType = typedefof<Guid>           }
+          
+            { SqlName = "DateTime2"        ; Parameter = None          ; ClrType = typedefof<DateTime>       }
+            { SqlName = "DateTimeOffset"   ; Parameter = None          ; ClrType = typedefof<DateTimeOffset> }
+            { SqlName = "Time"             ; Parameter = None          ; ClrType = typedefof<TimeSpan>       }
+ 
+            { SqlName = "VarBinary"        ; Parameter = Some "(max)"  ; ClrType = typedefof<byte array>     }
+        ]
+
         let private find mappings clrType = mappings |> List.find (fun m -> m.ClrType = clrType)
 
         let Find connection clrType = 
             match connection with
             | SqliteConnection _ -> find sqliteMappings clrType
-            | SqlServerConnection _ -> failwith "not supported at this moment"
+            | SqlServerConnection _ -> find sqlServerMappings clrType
 
     module ReflectionExtension =
 
@@ -133,7 +161,7 @@ module Table =
         let private mkName connection nameOfTable =
             match connection with
             | SqliteConnection _ -> nameOfTable
-            | SqlServerConnection _ -> failwith "not supported at this moment"
+            | SqlServerConnection _ -> sprintf "#%s" nameOfTable
         
         let Create connection nameOfTable rows =
             { Name    = mkName connection nameOfTable
@@ -145,32 +173,44 @@ module Table =
             { Create : string 
               Drop   : string }       
 
-        let private mkSqliteScripts (scheme : Schema.Table) = 
-            let columnToSql (column : Schema.Column) = 
-                sprintf "%s %s %s"
-                    column.Name                    
-                    (match column.Type.Parameter with
-                     | Some parameter -> sprintf "%s%s" column.Type.SqlName parameter
-                     | None           -> column.Type.SqlName)
-                    (if column.AllowNull then "NULL" else "NOT NULL")
+        let private toSql (column : Schema.Column) = 
+            sprintf "%s %s %s"
+                column.Name                    
+                (match column.Type.Parameter with
+                 | Some parameter -> sprintf "%s%s" column.Type.SqlName parameter
+                 | None           -> column.Type.SqlName)
+                (if column.AllowNull then "NULL" else "NOT NULL")
 
+        let private mkSqliteScripts (scheme : Schema.Table) = 
             let createScript =
                 sprintf "CREATE TEMP TABLE %s (%s)"
                     scheme.Name
                     (scheme.Columns 
-                        |> Array.map columnToSql
+                        |> Array.map toSql
                         |> String.concat ",")
 
-            let dropSCript =
-                sprintf "DROP TABLE %s" scheme.Name
+            let dropSCript = sprintf "DROP TABLE %s" scheme.Name
 
             { Create = createScript
               Drop   = dropSCript }
 
-        let Create connection (scheme : Schema.Table) = 
+        let private mkSqlServerScripts (scheme : Schema.Table) =
+            let createScript =
+                sprintf "CREATE TABLE %s (%s)"
+                    scheme.Name
+                    (scheme.Columns 
+                        |> Array.map toSql
+                        |> String.concat ",")
+
+            let dropSCript = sprintf "DROP TABLE %s" scheme.Name
+            
+            { Create = createScript
+              Drop   = dropSCript }
+
+        let Create connection scheme  = 
             match connection with
             | SqliteConnection _ -> mkSqliteScripts scheme
-            | SqlServerConnection _ -> failwith "not supported at this moment"
+            | SqlServerConnection _ -> mkSqlServerScripts scheme
 
     module Data =
         open Schema
