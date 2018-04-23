@@ -116,7 +116,7 @@ module Table =
             else
                 None
 
-    module Schema =
+    module Scheme =
 
         type Column = 
             { Name      : string
@@ -173,7 +173,7 @@ module Table =
             { Create : string 
               Drop   : string }       
 
-        let private toSql (column : Schema.Column) = 
+        let private toSql (column : Scheme.Column) = 
             sprintf "%s %s %s"
                 column.Name                    
                 (match column.Type.Parameter with
@@ -181,7 +181,7 @@ module Table =
                  | None           -> column.Type.SqlName)
                 (if column.AllowNull then "NULL" else "NOT NULL")
 
-        let private mkSqliteScripts (scheme : Schema.Table) = 
+        let private mkSqliteScripts (scheme : Scheme.Table) = 
             let createScript =
                 sprintf "CREATE TEMP TABLE %s (%s)"
                     scheme.Name
@@ -194,7 +194,7 @@ module Table =
             { Create = createScript
               Drop   = dropSCript }
 
-        let private mkSqlServerScripts (scheme : Schema.Table) =
+        let private mkSqlServerScripts (scheme : Scheme.Table) =
             let createScript =
                 sprintf "CREATE TABLE %s (%s)"
                     scheme.Name
@@ -213,7 +213,7 @@ module Table =
             | SqlServerConnection _ -> mkSqlServerScripts scheme
 
     module Data =
-        open Schema
+        open Scheme
 
         let private (|Values|Table|) scheme =
             if scheme.Columns.Length = 1 then
