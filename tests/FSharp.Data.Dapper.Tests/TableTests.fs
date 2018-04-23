@@ -7,6 +7,7 @@ open FSharp.Data.Dapper.Table.Scheme
 open FSharp.Data.Dapper.Table.Scripts
 
 open SqliteDatabase.Types
+open SqliteDatabase.Queries
 open System
 open System.Data
 
@@ -133,5 +134,29 @@ let dataTests =
 
             Expect.equal         actualColumn expectedColumn  "Wrong data table column"
             Expect.sequenceEqual actualRows   expectedRows    "Wrong data table rows"
+        }
+    ]
+
+
+[<Tests>]
+let queriesWithTablesAndValues =
+    testList "Table -> Queries" [
+        testAsync "Check query with tables and values" {
+            let personIdentificators = [1L;3L;4L]
+            let persons = [
+                { Id = 1L; Name = "Name-1"; Surname = "Surname-1"; Patronymic = None }
+                { Id = 2L; Name = "Name-2"; Surname = "Surname-2"; Patronymic = None }
+                { Id = 3L; Name = "Name-3"; Surname = "Surname-3"; Patronymic = None }
+                { Id = 4L; Name = "Name-4"; Surname = "Surname-4"; Patronymic = None }
+            ]
+
+            let expectedRows = persons |> Seq.filter (fun p -> (List.contains p.Id personIdentificators))
+            let! actualRows = querySeqAsync<Person> {
+                script "select p.* from TPerson as p join PID on p.Id = PID.Value"
+                values "PID" personIdentificators
+                table  "TPerson" persons
+            }
+
+            Expect.sequenceEqual actualRows expectedRows "Wrong rows"
         }
     ]

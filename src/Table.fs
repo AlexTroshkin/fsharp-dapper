@@ -1,9 +1,10 @@
 namespace FSharp.Data.Dapper
 
 open System
-open System.Reflection
+open System.Collections
 open System.Data
 open System.Data.Common
+open System.Reflection
 
 module Table =
 
@@ -254,6 +255,7 @@ module Table =
             let mkParameterNames columns = 
                 columns |> Seq.cast<DataColumn>
                         |> Seq.map (fun column -> sprintf "@%s" column.ColumnName)
+                        |> List.ofSeq
 
             let mkParameter (command : IDbCommand) name =
                 let parameter = command.CreateParameter()
@@ -270,10 +272,13 @@ module Table =
             let insertScript   = BulkInsert.mkInsertScript dataTable.TableName parameterNames
             let command        = BulkInsert.mkCommand connection insertScript
 
-            parameterNames 
-            |> Seq.map ((BulkInsert.mkParameter command) >> command.Parameters.Add)
-            |> ignore
+            let _parameters =
+                parameterNames |> Seq.map (BulkInsert.mkParameter command)
+                               |> List.ofSeq
             
+            for p in _parameters do 
+                command.Parameters.Add(p)
+
             let parameters = command.Parameters |> Seq.cast<DbParameter>
 
             for row in dataTable.Rows do                
@@ -282,3 +287,53 @@ module Table =
                 <| row.ItemArray
 
                 command.ExecuteNonQuery() |> ignore
+
+    type Table = 
+        { Name : string 
+          Rows : IEnumerable }
+
+    let public Scope 
+        (tables : #seq<Table>) 
+        (values : #seq<Table>) 
+        (specificConnection : Connection) 
+        f =
+
+        Connection.Scope specificConnection (fun specific connection ->
+            connection.Open()
+
+            let allTables = Seq.append tables values
+            let tablesIsMissing = Seq.isEmpty allTables
+
+            match tablesIsMissing with
+            | true -> f connection
+            | false ->
+                let (schemes, create, drop) = 
+                    allTables |> Seq.fold (fun (schemes, create, drop) table -> 
+                        let scheme = Scheme.Create specific table.Name (table.Rows |> Seq.cast<obj>)
+                        let scripts = Scripts.Create specific scheme
+
+                        (Seq.append schemes [scheme], 
+                         sprintf "%s;%s" create scripts.Create, 
+                         sprintf "%s;%s" drop scripts.Drop)
+                    ) (Seq.empty<Scheme.Table>, String.Empty, String.Empty)
+
+                let command = connection.CreateCommand()
+                command.CommandText <- create
+                command.ExecuteNonQuery() |> ignore
+
+                allTables |> Seq.iter2 (fun scheme table -> 
+                    let rows = table.Rows |> Seq.cast<obj>
+                    let rowsIsMissing = Seq.isEmpty rows
+
+                    match rowsIsMissing with
+                    | true  -> ()
+                    | false -> Data.Create scheme rows |> Operations.BulkInsert connection
+                ) schemes
+                     
+                let r = f connection
+
+                command.CommandText <- drop
+                command.ExecuteNonQuery() |> ignore
+
+                r
+        )

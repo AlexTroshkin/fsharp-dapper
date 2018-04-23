@@ -8,7 +8,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SqliteDatabase.fs" />
-    <Compile Include="QueryWithTemporaryTableTests.fs" />
     <Compile Include="TableTests.fs" />
     <Compile Include="QuerySeqAsyncTests.fs" />
     <Compile Include="QuerySingleAsyncTests.fs" />
