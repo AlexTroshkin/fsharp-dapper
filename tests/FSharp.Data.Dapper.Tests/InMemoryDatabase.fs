@@ -58,4 +58,4 @@ open System.Data
             | None -> ()
             | Some _scripts -> _scripts |> List.iter (fun script -> connection |> (runScript script))
 
-            connection
+            connection :> IDbConnection

@@ -2,13 +2,13 @@
 
 The wrapper above the 'Dapper' library allows you to write more familiar code in the F # language. It also contains a functional for more simple work with temporary tables
 
-## CI
+
 [![Build status](https://ci.appveyor.com/api/projects/status/lx1gduy9wkx5edwy?svg=true)](https://ci.appveyor.com/project/AlexTroshkin/fsharp-dapper)
 [![NuGet Badge](https://buildstats.info/nuget/FSharp.Data.Dapper)](https://www.nuget.org/packages/FSharp.Data.Dapper)
 
 [![Build history](https://buildstats.info/appveyor/chart/AlexTroshkin/fsharp-dapper)](https://ci.appveyor.com/project/AlexTroshkin/fsharp-dapper/history)
 
-## Support Option<'T> fields as parameters
+# Support Option<'T> fields as parameters
 ```fsharp
 type Person =
     { Id         : int
@@ -27,9 +27,71 @@ let main argv =
     // ...
 ```
 
-## Sample Queries
+# Examples of use (since version 2.0)
 
-###### QuerySingleAsync
+## Define your own query builders [ DataAccess / Db.fs ]
+```fsharp
+open FSharp.Data.Dapper
+
+module Db =
+    let private connectionF () = Connection.SqliteConnection (Connection.mkShared())
+
+    let querySeqAsync<'R>          = querySeqAsync<'R> (connectionF)
+    let querySingleAsync<'R>       = querySingleAsync<'R> (connectionF)
+    let querySingleOptionAsync<'R> = querySingleOptionAsync<'R> (connectionF)
+```
+
+## Use query builders [ DataAccess / Users.fs ]
+```fsharp
+type User = 
+    { Id       : int 
+      Login    : string
+      Password : string }
+
+module Users =
+
+    let findByLogin login = Db.querySingleAsync<User> {
+        parameters (dict ["Login", box login])
+        script "select * from User where Login = @Login limit 1"
+    }
+
+    let tryFidnByLogin login = Db.querySingleOptionAsync<User> {
+        parameters (dict ["Login", box login])
+        script "select * from User where Login = @Login limit 1"
+    }
+
+    (* NOTE: Using the 'values' operator in the query builder creates 
+       a temporary table with a single column named 'Value' in the database *)
+
+    let findByIDs identificators = Db.querySeqAsync<User> {
+        values "UserID" identificators 
+        script """
+            select *
+            from User as u
+                join UserID as uid on
+                    u.Id = uid.Value
+        """
+    }
+
+    let updateAll users = Db.querySingleAsync<int> {
+        table "ChangedUser" users
+        script """
+            set (Login, Password) = select (Login, Password
+                from ChangedUser 
+                    where ChangedUser.Id = User.Id) 
+                    
+            where exists (
+                select 1 
+                from ChangedUser 
+                where ChangedUser.Id = User.Id
+            ) 
+        """
+    }
+```
+
+# Examples of use (before 2.0)
+
+## QuerySingleAsync
 ```fsharp
 open FSharp.Data.Dapper
 open FSharp.Data.Dapper.Query.Parameters
@@ -50,7 +112,7 @@ let tryFindUser
     | None      -> None
 ```    
 
-###### QueryAsync
+## QueryAsync
 ```fsharp
 open FSharp.Data.Dapper
 
@@ -64,7 +126,7 @@ let getAllUsers (connection : IDbConnection) =
     users
 ```
 
-###### ExecuteAsync
+## ExecuteAsync
 ```fsharp
 open FSharp.Data.Dapper
 
@@ -93,7 +155,7 @@ At the moment, temporary tables are supported for the following databases:
 - Microsoft SQL Server
 - Sqlite
 
-###### Temp table with one column
+## Temp table with one column
 ```fsharp
 open FSharp.Data.Dapper
 open FSharp.Data.Dapper.TempTable
@@ -118,7 +180,7 @@ let findPersons
     (query |> QueryAsync <| connection) |> Async.RunSynchronously
 ```
 
-###### Temp table with multiple columns
+## Temp table with multiple columns
 ```fsharp
 open FSharp.Data.Dapper
 open FSharp.Data.Dapper.TempTable

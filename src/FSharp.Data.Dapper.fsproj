@@ -1,35 +1,33 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
   <PropertyGroup>
     <Authors>Alex Troshkin</Authors>    
     <Description>The wrapper above the 'Dapper' library allows you to write more familiar code in the F # language. It also contains a functional for more simple work with temporary tables</Description>
-    
+   
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/AlexTroshkin/fsharp-dapper</RepositoryUrl>
     <PackageProjectUrl>https://github.com/AlexTroshkin/fsharp-dapper</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/AlexTroshkin/fsharp-dapper/blob/master/LICENCE</PackageLicenseUrl>
     <PackageTags>fsharp dapper</PackageTags>
-    
-    <!--<IncludeSymbols>true</IncludeSymbols>
-    <IncludeSource>true</IncludeSource>-->
-    
-    <Version>1.1.1</Version>
+  
+    <Version>2.0.0</Version>
+    <PackageReleaseNotes>
+      See the changes in the README.MD section 'Examples of use (since version 2.0) - https://github.com/AlexTroshkin/fsharp-dapper'
+      List of closed tasks for version 2.0 - https://github.com/AlexTroshkin/fsharp-dapper/milestone/1?closed=1
+    </PackageReleaseNotes>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageReleaseNotes>Added option type handler</PackageReleaseNotes>
-  </PropertyGroup>
-    
   <ItemGroup>
-    <Compile Include="Enums.fs" />
     <Compile Include="OptionHandler.fs" />
-    <Compile Include="SqlTypeRepresentation.fs" />
-    <Compile Include="SqlClrTypeCorrelation.fs" />
-    <Compile Include="Reflection.fs" />
-    <Compile Include="BulkInsert.fs" />
-    <Compile Include="TempTable.fs" />
-    <Compile Include="Query.fs" />
+    <Compile Include="Connection.fs" />
+    <Compile Include="Table.fs" />
+    <Compile Include="QueryAsyncRunner.fs" />
+    <Compile Include="QuerySeqAsyncBuilder.fs" />
+    <Compile Include="QuerySingleOptionAsyncBuilder.fs" />
+    <Compile Include="QuerySingleAsyncBuilder.fs" />
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>
