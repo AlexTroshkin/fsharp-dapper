@@ -2,6 +2,24 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>Alex Troshkin</Authors>    
+    <Description>The wrapper above the 'Dapper' library allows you to write more familiar code in the F # language. It also contains a functional for more simple work with temporary tables</Description>
+   
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/AlexTroshkin/fsharp-dapper</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/AlexTroshkin/fsharp-dapper</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/AlexTroshkin/fsharp-dapper/blob/master/LICENCE</PackageLicenseUrl>
+    <PackageTags>fsharp dapper</PackageTags>
+  
+    <Version>2.0.0</Version>
+    <PackageReleaseNotes>
+      See the changes in the README.MD section 'Examples of use (since version 2.0) - https://github.com/AlexTroshkin/fsharp-dapper'
+      List of closed tasks for version 2.0 - https://github.com/AlexTroshkin/fsharp-dapper/milestone/1?closed=1
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="OptionHandler.fs" />
     <Compile Include="Connection.fs" />
