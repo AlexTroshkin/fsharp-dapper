@@ -29,7 +29,7 @@ let main argv =
 
 # Examples of use (since version 2.0)
 
-## Define your own query builders
+## Define your own query builders [ DataAccess / Db.fs ]
 ```fsharp
 open FSharp.Data.Dapper
 
@@ -41,7 +41,7 @@ module Db =
     let querySingleOptionAsync<'R> = querySingleOptionAsync<'R> (connectionF)
 ```
 
-## Use query builders
+## Use query builders [ DataAccess / Users.fs ]
 ```fsharp
 type User = 
     { Id       : int 
@@ -49,14 +49,43 @@ type User =
       Password : string }
 
 module Users =
-    let findBy login = querySingleAsync<User> {
-        script "select * from User where Login = @Login limit 1"
+
+    let findByLogin login = Db.querySingleAsync<User> {
         parameters (dict ["Login", box login])
+        script "select * from User where Login = @Login limit 1"
     }
 
-    let tryFidnBy login = querySingleOptionAsync<Types.Person> {
-        script "select * from User where Login = @Login limit 1"
+    let tryFidnByLogin login = Db.querySingleOptionAsync<User> {
         parameters (dict ["Login", box login])
+        script "select * from User where Login = @Login limit 1"
+    }
+
+    (* NOTE: Using the 'values' operator in the query builder creates 
+       a temporary table with a single column named 'Value' in the database *)
+
+    let findByIDs identificators = Db.querySeqAsync<User> {
+        values "UserID" identificators 
+        script """
+            select *
+            from User as u
+                join UserID as uid on
+                    u.Id = uid.Value
+        """
+    }
+
+    let updateAll users = Db.querySingleAsync<int> {
+        table "ChangedUser" users
+        script """
+            set (Login, Password) = select (Login, Password
+                from ChangedUser 
+                    where ChangedUser.Id = User.Id) 
+                    
+            where exists (
+                select 1 
+                from ChangedUser 
+                where ChangedUser.Id = User.Id
+            ) 
+        """
     }
 ```
 
