@@ -299,7 +299,6 @@ module Table =
         f =
 
         Connection.Scope specificConnection (fun specific connection ->
-            connection.Open()
 
             let allTables = Seq.append tables values
             let tablesIsMissing = Seq.isEmpty allTables
@@ -307,6 +306,8 @@ module Table =
             match tablesIsMissing with
             | true -> f connection
             | false ->
+                connection.Open()
+
                 let (schemes, create, drop) = 
                     allTables |> Seq.fold (fun (schemes, create, drop) table -> 
                         let scheme = Scheme.Create specific table.Name (table.Rows |> Seq.cast<obj>)
